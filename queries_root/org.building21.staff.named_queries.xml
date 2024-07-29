@@ -1,0 +1,89 @@
+<queries>
+  <query name="org.building21.staff" coreTable="users" flattened="true">
+	<summary>building21 staff</summary>
+    <columns>
+      <column column="USERS.FIRST_NAME">FirstName</column>
+	  <column column="USERS.LAST_NAME">LastName</column>
+	  <column column="USERS.TEACHERNUMBER">StaffNumber</column>
+	  <column column="USERS.EMAIL_ADDR">Email</column>
+	  <column column="USERS.EMAIL_ADDR">GoogleAccount</column>
+	  <column column="USERS.TITLE">Role</column>
+	  <column column="USERS.HOMESCHOOLID">Schools</column>
+	  <column column="USERS.DCID">ForeignKey</column>
+	  <column column="USERS.DCID">StaffIdentifier1</column>
+	  <column column="USERS.DCID">StaffIdentifier2</column>
+	  <column column="USERS.DCID">StaffIdentifier3</column>
+	  <column column="USERS.DCID">StaffIdentifier4</column>
+    </columns>
+    <sql><![CDATA[
+with yearquery as (select 
+  id, abbreviation
+from terms
+where portion = 1
+  AND terms.lastday > sysdate
+  AND sysdate > terms.firstday-30
+  AND schoolid=0
+),
+TeacherorgSource as (select 
+  users.dcid as dcid,
+  case cast(schoolstaff.SchoolID as varchar2(10))
+    when '0'
+    then cast((select prefs.value from prefs where prefs.name = 'districtnumber') as varchar2(10))
+    else cast(schoolstaff.SchoolID as varchar2(10))
+  end as SchoolID
+from users
+join schoolstaff on schoolstaff.users_dcid = users.dcid and schoolstaff.status = 1 and schoolstaff.staffstatus = 1 and schoolstaff.schoolid != users.homeschoolid
+),
+TeacherorgSourceh as (select 
+  users.dcid as dcid,
+  case cast(schoolstaff.SchoolID as varchar2(10))
+    when '0'
+    then cast((select prefs.value from prefs where prefs.name = 'districtnumber') as varchar2(10))
+    else cast(schoolstaff.SchoolID as varchar2(10))
+  end as SchoolID
+from users
+join schoolstaff on schoolstaff.users_dcid = users.dcid and schoolstaff.schoolid = users.homeschoolid
+),
+TeacherorgSourceGroup as (select 
+  users.dcid,
+  case 
+     when (LISTAGG(TeacherorgSource.SchoolID, ',') WITHIN GROUP (ORDER BY TeacherorgSource.SchoolID)) is null 
+     then cast(TeacherorgSourceh.SchoolID as varchar2(10))
+     else TeacherorgSourceh.SchoolID||','||(LISTAGG(TeacherorgSource.SchoolID, ',') WITHIN GROUP (ORDER BY TeacherorgSource.SchoolID))
+  end as orgSourcedIds
+from users
+join (select * from TeacherorgSourceh) TeacherorgSourceh on TeacherorgSourceh.dcid = users.dcid
+left join (select * from TeacherorgSource) TeacherorgSource on TeacherorgSource.dcid = users.dcid
+join schoolstaff on schoolstaff.users_dcid = users.dcid and schoolstaff.schoolid = users.homeschoolid
+
+group by users.dcid, TeacherorgSourceh.SchoolID
+)
+-- teachers
+select 
+  users.first_name as FirstName,
+  users.last_name as LastName,
+  users.teachernumber as StaffNumber,
+  users.email_addr as Email,
+  '' as GoogleAccount,
+  users.title as Role,
+  TeacherorgSourceGroup.orgSourcedIds as Schools,
+  'T'||users.dcid as ForeignKey,
+  '' as StaffIdentifier1,
+  '' as StaffIdentifier2,
+  '' as StaffIdentifier3,
+  '' as StaffIdentifier4
+
+from users
+left join (select * from TeacherorgSourceGroup) TeacherorgSourceGroup on TeacherorgSourceGroup.dcid = users.dcid
+join schoolstaff on schoolstaff.users_dcid = users.dcid
+left join teachers on teachers.users_dcid = users.dcid AND teachers.schoolId = users.homeSchoolId
+where BITAND(schoolstaff.status, schoolstaff.staffstatus)+0 = 1
+and schoolstaff.SchoolID = 1497538
+and users.email_addr like '%@%'
+and users.title is not null
+and users.teachernumber is not null
+
+    ]]></sql>
+  </query>
+  <!-- Define more queries here -->
+</queries>
