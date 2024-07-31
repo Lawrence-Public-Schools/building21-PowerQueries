@@ -2,18 +2,18 @@
   <query name="org.building21.staff" coreTable="users" flattened="true">
 	<summary>building21 staff</summary>
     <columns>
-      <column column="USERS.FIRST_NAME">FirstName</column>
-	  <column column="USERS.LAST_NAME">LastName</column>
-	  <column column="USERS.TEACHERNUMBER">StaffNumber</column>
-	  <column column="USERS.EMAIL_ADDR">Email</column>
-	  <column column="USERS.EMAIL_ADDR">GoogleAccount</column>
-	  <column column="USERS.TITLE">Role</column>
-	  <column column="USERS.HOMESCHOOLID">Schools</column>
-	  <column column="USERS.DCID">ForeignKey</column>
-	  <column column="USERS.DCID">StaffIdentifier1</column>
-	  <column column="USERS.DCID">StaffIdentifier2</column>
-	  <column column="USERS.DCID">StaffIdentifier3</column>
-	  <column column="USERS.DCID">StaffIdentifier4</column>
+      <column column="USERS.FIRST_NAME">a_FirstName</column>
+	  <column column="USERS.LAST_NAME">b_LastName</column>
+	  <column column="USERS.TEACHERNUMBER">c_StaffNumber</column>
+	  <column column="USERS.EMAIL_ADDR">d_Email</column>
+	  <column column="USERS.EMAIL_ADDR">e_GoogleAccount</column>
+	  <column column="USERS.TITLE">f_Role</column>
+	  <column column="USERS.HOMESCHOOLID">g_Schools</column>
+	  <column column="USERS.DCID">h_ForeignKey</column>
+	  <column column="USERS.DCID">i_StaffIdentifier1</column>
+	  <column column="USERS.DCID">j_StaffIdentifier2</column>
+	  <column column="USERS.DCID">k_StaffIdentifier3</column>
+	  <column column="USERS.DCID">l_StaffIdentifier4</column>
     </columns>
     <sql><![CDATA[
 with yearquery as (select 
