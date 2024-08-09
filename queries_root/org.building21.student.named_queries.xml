@@ -27,7 +27,7 @@
 	  <column column="STUDENTS.STUDENT_NUMBER">w_State504Status</column>
 	  <column column="STUDENTS.STUDENT_NUMBER">x_GraduationGroup</column>
 	  <column column="STUDENTS.HOME_PHONE">y_Phone</column>
-	  <column column="STUDENTS.DCID">z_SecondaryIdentifier</column>
+	  <column column="PSM_STUDENTCONTACT.EMAIL">z_SecondaryIdentifier</column>
     </columns>
     <sql><![CDATA[
 with yearquery as (select 

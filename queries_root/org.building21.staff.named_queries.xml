@@ -9,11 +9,11 @@
 	  <column column="USERS.EMAIL_ADDR">e_GoogleAccount</column>
 	  <column column="USERS.TITLE">f_Role</column>
 	  <column column="USERS.HOMESCHOOLID">g_Schools</column>
-	  <column column="USERS.DCID">h_ForeignKey</column>
-	  <column column="USERS.DCID">i_StaffIdentifier1</column>
-	  <column column="USERS.DCID">j_StaffIdentifier2</column>
-	  <column column="USERS.DCID">k_StaffIdentifier3</column>
-	  <column column="USERS.DCID">l_StaffIdentifier4</column>
+	  <column column="USERS.EMAIL_ADDR">h_ForeignKey</column>
+	  <column column="USERS.EMAIL_ADDR">i_StaffIdentifier1</column>
+	  <column column="USERS.EMAIL_ADDR">j_StaffIdentifier2</column>
+	  <column column="USERS.EMAIL_ADDR">k_StaffIdentifier3</column>
+	  <column column="USERS.EMAIL_ADDR">l_StaffIdentifier4</column>
     </columns>
     <sql><![CDATA[
 with yearquery as (select 
