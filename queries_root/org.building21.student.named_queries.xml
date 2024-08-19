@@ -21,7 +21,7 @@
 	  <column column="STUDENTS.STUDENT_NUMBER">q_ELL</column>
 	  <column column="STUDENTS.STUDENT_NUMBER">r_FRL</column>
 	  <column column="STUDENTS.SCHOOLID">s_School</column>
-	  <column column="STUDENTRACE.RACECD">t_Ethnicity</column>
+	  <column column="STUDENTS.STUDENT_NUMBER">t_Ethnicity</column>
 	  <column column="STUDENTS.GENDER">u_Gender</column>
 	  <column column="STUDENTS.STUDENT_NUMBER">v_Gifted</column>
 	  <column column="STUDENTS.STUDENT_NUMBER">w_State504Status</column>
