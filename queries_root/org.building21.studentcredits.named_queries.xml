@@ -1,0 +1,61 @@
+<queries>
+  <query name="org.building21.studentcredits" coreTable="students" flattened="true">
+	<summary>building21 studentcredits</summary>
+    <columns>
+      <column column="STUDENTS.STUDENT_NUMBER">a_StudentNumber</column>
+	  <column column="TERMS.LASTDAY">b_YearEarned</column>
+	  <column column="CC.SCHOOLID">c_SchoolEarned</column>
+	  <column column="STOREDGRADES.GRADE_LEVEL">d_GradeLevelEarned</column>
+	  <column column="SECTIONS.COURSE_NUMBER">e_CourseNumber</column>
+	  <column column="SECTIONS.EXPRESSION">f_SectionNumber</column>
+	  <column column="COURSES.COURSE_NAME">g_CourseTitle</column>
+	  <column column="STOREDGRADES.GRADESCALE_NAME">h_CreditArea</column>
+	  <column column="STOREDGRADES.PERCENT">i_FinalGradeNumeric</column>
+	  <column column="STOREDGRADES.GRADE">j_FinalGradeAlpha</column>
+	  <column column="STOREDGRADES.POTENTIALCRHRS">k_CreditsAttempted</column>
+	  <column column="STOREDGRADES.EARNEDCRHRS">l_CreditsEarned</column>
+    </columns>
+    <sql><![CDATA[
+with SectionExpression as ( select sections.dcid,
+  case
+    when sections.External_Expression is null then sections.expression
+    else sections.External_Expression
+  end as Expression
+from sections)
+-- students
+select
+  to_char(students.student_number) as StudentNumber,
+  to_char(Terms.lastday,'yyyy') as YearEarned,
+  CC.SchoolID as SchoolEarned,
+  StoredGrades.Grade_Level as GradeLevelEarned,
+  Sections.Course_Number as CourseNumber,
+  SectionExpression.Expression as SectionNumber,
+  Courses.Course_Name as CourseTitle,
+  '' as CreditArea,
+  StoredGrades.Percent as FinalGradeNumeric,
+  StoredGrades.Grade as FinalGradeAlpha,
+  StoredGrades.PotentialCrHrs  as CreditsAttempted,
+  StoredGrades.EarnedCrHrs as CreditsEarned
+
+from Students
+
+-- CC join graph
+Join CC on Students.id = cc.studentid
+-- Sections join graph
+Join Sections on CC.SectionID = Sections.id
+join (select * from SectionExpression) SectionExpression on SectionExpression.dcid = Sections.dcid
+join schools on cc.schoolid = schools.school_number
+-- Course join graph
+Join Courses on Sections.course_number = Courses.course_number
+-- Terms join graph
+Join Terms on CC.TermID = Terms.ID
+-- Terms join graph
+Join StoredGrades on Terms.ID = StoredGrades.TermID and Students.id = StoredGrades.StudentID and Terms.SchoolID = StoredGrades.SchoolID AND Sections.ID =  StoredGrades.SectionID
+where StoredGrades.StoreCode = 'Y1'
+and StoredGrades.TermBinsName = 'Y1'
+and Students.schoolid = 1497538
+
+    ]]></sql>
+  </query>
+  <!-- Define more queries here -->
+</queries>
