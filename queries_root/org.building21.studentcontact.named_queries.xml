@@ -1,0 +1,284 @@
+<queries>
+  <query name="org.building21.studentcontact" coreTable="person" flattened="true">
+	<summary>building21 studentcontact</summary>
+    <columns>
+      <column column="STUDENTS.STUDENT_NUMBER">aa_StudentNumber</column>
+	  <column column="PERSON.FIRSTNAME">ab_FirstName</column>
+	  <column column="PERSON.LASTNAME">ac_LastName</column>
+	  <column column="PHONENUMBER.PHONENUMBER">ad_Phone1</column>
+	  <column column="PERSONPHONENUMBERASSOC.PHONETYPECODESETID">ae_Phone1Type</column>
+	  <column column="PHONENUMBER.PHONENUMBEREXT">af_Phone1Ext</column>
+	  <column column="PHONENUMBER.PHONENUMBER">ag_Phone2</column>
+	  <column column="PERSONPHONENUMBERASSOC.PHONETYPECODESETID">ah_Phone2Type</column>
+	  <column column="PHONENUMBER.PHONENUMBEREXT">ai_Phone2Ext</column>
+	  <column column="PHONENUMBER.PHONENUMBER">aj_Phone3</column>
+	  <column column="PERSONPHONENUMBERASSOC.PHONETYPECODESETID">ak_Phone3Type</column>
+	  <column column="PHONENUMBER.PHONENUMBEREXT">al_Phone3Ext</column>
+	  <column column="PHONENUMBER.PHONENUMBER">am_Phone4</column>
+	  <column column="PERSONPHONENUMBERASSOC.PHONETYPECODESETID">an_Phone4Type</column>
+	  <column column="PHONENUMBER.PHONENUMBEREXT">ao_Phone4Ext</column>
+	  <column column="PHONENUMBER.PHONENUMBER">ap_Phone5</column>
+	  <column column="PERSONPHONENUMBERASSOC.PHONETYPECODESETID">aq_Phone5Type</column>
+	  <column column="PHONENUMBER.PHONENUMBEREXT">ar_Phone5Ext</column>
+	  <column column="PERSONADDRESS.STREET">as_Address1</column>
+	  <column column="PERSONADDRESS.LINETWO">at_Address2</column>
+	  <column column="PERSONADDRESS.CITY">au_AddressCity</column>
+	  <column column="PERSONADDRESS.STATESCODESETID">av_AddressState</column>
+	  <column column="PERSONADDRESS.POSTALCODE">aw_AddressZip</column>
+	  <column column="EMAILADDRESS.EMAILADDRESS">ax_Email1</column>
+	  <column column="EMAILADDRESS.EMAILADDRESS">ay_Email2</column>
+	  <column column="EMAILADDRESS.EMAILADDRESS">az_Email3</column>
+	  <column column="STUDENTCONTACTDETAIL.LIVESWITHFLg">ba_LivesWith</column>
+	  <column column="STUDENTCONTACTDETAIL.RELATIONSHIPTYPECODESETID">bb_Relationship</column>
+	  <column column="PERSON.ID">bc_ContactIdentifier</column>
+	  <column column="GUARDIANS.STATUS">bd_Guardian</column>
+    </columns>
+    <sql><![CDATA[
+with 
+PSSIS_Person_Phone_Group as (select 
+PSSIS_Person_Phone.PersonID,
+PSSIS_Person_Phone.PhoneNumber,
+PSSIS_Person_Phone.PhoneNumberExt,
+PSSIS_Person_Phone.PhoneType,
+row_number () over (
+           partition by PersonID
+           order by IsPreferred DESC,PhoneNumberPriorityOrder ASC
+         ) rn
+from PSSIS_Person_Phone),
+
+PSSIS_Person_Phone1 as (select 
+PSSIS_Person_Phone_Group.PersonID,
+PSSIS_Person_Phone_Group.PhoneNumber,
+PSSIS_Person_Phone_Group.PhoneNumberExt,
+PSSIS_Person_Phone_Group.PhoneType
+from PSSIS_Person_Phone_Group
+where PSSIS_Person_Phone_Group.rn = 1),
+
+PSSIS_Person_Phone2 as (select 
+PSSIS_Person_Phone_Group.PersonID,
+PSSIS_Person_Phone_Group.PhoneNumber,
+PSSIS_Person_Phone_Group.PhoneNumberExt,
+PSSIS_Person_Phone_Group.PhoneType
+from PSSIS_Person_Phone_Group
+where PSSIS_Person_Phone_Group.rn = 2),
+
+PSSIS_Person_Phone3 as (select 
+PSSIS_Person_Phone_Group.PersonID,
+PSSIS_Person_Phone_Group.PhoneNumber,
+PSSIS_Person_Phone_Group.PhoneNumberExt,
+PSSIS_Person_Phone_Group.PhoneType
+from PSSIS_Person_Phone_Group
+where PSSIS_Person_Phone_Group.rn = 3),
+
+PSSIS_Person_Phone4 as (select 
+PSSIS_Person_Phone_Group.PersonID,
+PSSIS_Person_Phone_Group.PhoneNumber,
+PSSIS_Person_Phone_Group.PhoneNumberExt,
+PSSIS_Person_Phone_Group.PhoneType
+from PSSIS_Person_Phone_Group
+where PSSIS_Person_Phone_Group.rn = 4),
+
+PSSIS_Person_Phone5 as (select 
+PSSIS_Person_Phone_Group.PersonID,
+PSSIS_Person_Phone_Group.PhoneNumber,
+PSSIS_Person_Phone_Group.PhoneNumberExt,
+PSSIS_Person_Phone_Group.PhoneType
+from PSSIS_Person_Phone_Group
+where PSSIS_Person_Phone_Group.rn = 5),
+
+PSSIS_Person_Email_Group as (select 
+PSSIS_Person_Email.PersonID,
+PSSIS_Person_Email.EmailAddress,
+row_number () over (
+           partition by PersonID
+           order by IsPrimaryEmailAddress DESC,EmailAddressPriorityOrder ASC
+         ) rn
+from PSSIS_Person_Email),
+
+PSSIS_Person_Email1 as (select 
+PSSIS_Person_Email_Group.PersonID,
+PSSIS_Person_Email_Group.EmailAddress
+from PSSIS_Person_Email_Group
+where PSSIS_Person_Email_Group.rn = 1),
+
+PSSIS_Person_Email2 as (select 
+PSSIS_Person_Email_Group.PersonID,
+PSSIS_Person_Email_Group.EmailAddress
+from PSSIS_Person_Email_Group
+where PSSIS_Person_Email_Group.rn = 2),
+
+PSSIS_Person_Email3 as (select 
+PSSIS_Person_Email_Group.PersonID,
+PSSIS_Person_Email_Group.EmailAddress
+from PSSIS_Person_Email_Group
+where PSSIS_Person_Email_Group.rn = 3),
+
+PSSIS_Person_Address_Group as (select 
+PSSIS_Person_Address.PersonID,
+PSSIS_Person_Address.Street,
+PSSIS_Person_Address.Unit,
+PSSIS_Person_Address.LineTwo,
+PSSIS_Person_Address.City,
+PSSIS_Person_Address.State,
+PSSIS_Person_Address.PostalCode,
+row_number () over (
+           partition by PersonID
+           order by AddressPriorityOrder ASC
+         ) rn
+from PSSIS_Person_Address
+where
+(sysdate > PSSIS_Person_Address.StartDate OR PSSIS_Person_Address.StartDate IS NULL)
+and
+(PSSIS_Person_Address.EndDate > sysdate OR PSSIS_Person_Address.EndDate IS NULL)
+),
+
+PSSIS_Person_Address1 as (select 
+PSSIS_Person_Address_Group.PersonID,
+PSSIS_Person_Address_Group.Street,
+PSSIS_Person_Address_Group.Unit,
+PSSIS_Person_Address_Group.LineTwo,
+PSSIS_Person_Address_Group.City,
+PSSIS_Person_Address_Group.State,
+PSSIS_Person_Address_Group.PostalCode
+from PSSIS_Person_Address_Group
+where PSSIS_Person_Address_Group.rn = 1)
+
+SELECT  
+  students.student_number as StudentNumber,
+  guardian.firstname as FirstName,
+  guardian.lastname as LastName,
+  PSSIS_Person_Phone1.phonenumber as Phone1,
+  PSSIS_Person_Phone1.PhoneType as Phone1Type,
+  PSSIS_Person_Phone1.PhoneNumberExt as Phone1Ext,
+  PSSIS_Person_Phone2.phonenumber as Phone2,
+  PSSIS_Person_Phone2.PhoneType as Phone2Type,
+  PSSIS_Person_Phone2.PhoneNumberExt as Phone2Ext,
+  PSSIS_Person_Phone3.phonenumber as Phone3,
+  PSSIS_Person_Phone3.PhoneType as Phone3Type,
+  PSSIS_Person_Phone3.PhoneNumberExt as Phone3Ext,
+  PSSIS_Person_Phone4.phonenumber as Phone4,
+  PSSIS_Person_Phone4.PhoneType as Phone4Type,
+  PSSIS_Person_Phone4.PhoneNumberExt as Phone4Ext,
+  PSSIS_Person_Phone5.phonenumber as Phone5,
+  PSSIS_Person_Phone5.PhoneType as Phone5Type,
+  PSSIS_Person_Phone5.PhoneNumberExt as Phone5Ext,
+  case WHEN TRIM(PSSIS_Person_Address1.Unit) IS NULL
+     then PSSIS_Person_Address1.Street
+     else PSSIS_Person_Address1.Street || ', ' || PSSIS_Person_Address1.Unit
+  end as Address1,
+  PSSIS_Person_Address1.LineTwo as Address2,
+  PSSIS_Person_Address1.City as AddressCity,
+  PSSIS_Person_Address1.State as AddressState,
+  PSSIS_Person_Address1.PostalCode as AddressZip,
+  pcas_emailcontact.emailaddress as Email1,
+  PSSIS_Person_Email1.EmailAddress as Email2,
+  PSSIS_Person_Email2.EmailAddress as Email3,
+  case StudentContactDetail.LivesWithFlg
+     when 1 then 'Y'
+     else 'N'
+  end as LivesWith,  
+  personRelationship.code as Relationship,
+  person.id as ContactIdentifier,
+  'Y' as Guardian
+
+from guardian
+left join pcas_account on GUARDIAN.accountidentifier = pcas_account.pcas_accounttoken
+left join pcas_emailcontact on pcas_account.pcas_accountID = pcas_emailcontact.pcas_accountid
+left join guardianpersonassoc on guardian.guardianid = guardianpersonassoc.guardianid
+left join person on GuardianPersonAssoc.PersonID = person.id
+left join studentcontactassoc on person.id = studentcontactassoc.personID
+left join StudentContactDetail on studentcontactassoc.StudentContactAssocID = StudentContactDetail.StudentContactAssocID
+left join students on studentcontactassoc.studentdcid = students.dcid
+left join GuardianStudent on students.dcid = GuardianStudent.StudentsDCID and Guardian.guardianid=GuardianStudent.GuardianID
+LEFT JOIN codeset personRelationship ON personRelationship.codesetid = studentContactAssoc.currreltypecodesetid
+LEFT JOIN person ON person.id = studentContactAssoc.personid
+LEFT JOIN PSSIS_Person_Phone1 ON PSSIS_Person_Phone1.PersonID = person.id
+LEFT JOIN PSSIS_Person_Phone2 ON PSSIS_Person_Phone2.PersonID = person.id
+LEFT JOIN PSSIS_Person_Phone3 ON PSSIS_Person_Phone3.PersonID = person.id
+LEFT JOIN PSSIS_Person_Phone4 ON PSSIS_Person_Phone4.PersonID = person.id
+LEFT JOIN PSSIS_Person_Phone5 ON PSSIS_Person_Phone5.PersonID = person.id
+LEFT JOIN PSSIS_Person_Email1 ON PSSIS_Person_Email1.PersonID = person.id
+LEFT JOIN PSSIS_Person_Email2 ON PSSIS_Person_Email2.PersonID = person.id
+LEFT JOIN PSSIS_Person_Address1 ON PSSIS_Person_Address1.PersonID = person.id
+where PCAS_ACCOUNT.ISENABLED = 1
+and Person.IsActive = 1
+and StudentContactDetail.IsActive = 1
+and GuardianStudent.GuardianID is not null
+and
+(sysdate > StudentContactDetail.StartDate OR StudentContactDetail.StartDate IS NULL)
+and
+(StudentContactDetail.EndDate > sysdate OR StudentContactDetail.EndDate IS NULL)
+and students.schoolid = 1497538
+
+union all
+
+SELECT
+  students.student_number as StudentNumber,
+  person.firstname as FirstName,
+  person.lastname as LastName,
+  PSSIS_Person_Phone1.phonenumber as Phone1,
+  PSSIS_Person_Phone1.PhoneType as Phone1Type,
+  PSSIS_Person_Phone1.PhoneNumberExt as Phone1Ext,
+  PSSIS_Person_Phone2.phonenumber as Phone2,
+  PSSIS_Person_Phone2.PhoneType as Phone2Type,
+  PSSIS_Person_Phone2.PhoneNumberExt as Phone2Ext,
+  PSSIS_Person_Phone3.phonenumber as Phone3,
+  PSSIS_Person_Phone3.PhoneType as Phone3Type,
+  PSSIS_Person_Phone3.PhoneNumberExt as Phone3Ext,
+  PSSIS_Person_Phone4.phonenumber as Phone4,
+  PSSIS_Person_Phone4.PhoneType as Phone4Type,
+  PSSIS_Person_Phone4.PhoneNumberExt as Phone4Ext,
+  PSSIS_Person_Phone5.phonenumber as Phone5,
+  PSSIS_Person_Phone5.PhoneType as Phone5Type,
+  PSSIS_Person_Phone5.PhoneNumberExt as Phone5Ext,
+  case WHEN TRIM(PSSIS_Person_Address1.Unit) IS NULL
+     then PSSIS_Person_Address1.Street
+     else PSSIS_Person_Address1.Street || ', ' || PSSIS_Person_Address1.Unit
+  end as Address1,
+  PSSIS_Person_Address1.LineTwo as Address2,
+  PSSIS_Person_Address1.City as AddressCity,
+  PSSIS_Person_Address1.State as AddressState,
+  PSSIS_Person_Address1.PostalCode as AddressZip,
+  PSSIS_Person_Email1.EmailAddress as Email1,
+  PSSIS_Person_Email2.EmailAddress as Email2,
+  PSSIS_Person_Email3.EmailAddress as Email3,
+  case StudentContactDetail.LivesWithFlg
+     when 1 then 'Y'
+     else 'N'
+  end as LivesWith,
+  personRelationship.code as Relationship,
+  person.id as ContactIdentifier,
+  'N' as Guardian
+from person
+
+left join GuardianPersonAssoc on person.id = GuardianPersonAssoc.PersonID
+left join guardian on guardianpersonassoc.guardianid = guardian.guardianid
+left join studentcontactassoc on person.id = studentcontactassoc.personID
+left join StudentContactDetail on studentcontactassoc.StudentContactAssocID = StudentContactDetail.StudentContactAssocID
+left join students on studentcontactassoc.studentdcid = students.dcid
+left join GuardianStudent on students.dcid = GuardianStudent.StudentsDCID and Guardian.guardianid=GuardianStudent.GuardianID
+LEFT JOIN codeset personRelationship ON personRelationship.codesetid = studentContactAssoc.currreltypecodesetid
+LEFT JOIN person ON person.id = studentContactAssoc.personid
+LEFT JOIN PSSIS_Person_Phone1 ON PSSIS_Person_Phone1.PersonID = person.id
+LEFT JOIN PSSIS_Person_Phone2 ON PSSIS_Person_Phone2.PersonID = person.id
+LEFT JOIN PSSIS_Person_Phone3 ON PSSIS_Person_Phone3.PersonID = person.id
+LEFT JOIN PSSIS_Person_Phone4 ON PSSIS_Person_Phone4.PersonID = person.id
+LEFT JOIN PSSIS_Person_Phone5 ON PSSIS_Person_Phone5.PersonID = person.id
+LEFT JOIN PSSIS_Person_Email1 ON PSSIS_Person_Email1.PersonID = person.id
+LEFT JOIN PSSIS_Person_Email2 ON PSSIS_Person_Email2.PersonID = person.id
+LEFT JOIN PSSIS_Person_Email3 ON PSSIS_Person_Email3.PersonID = person.id
+LEFT JOIN PSSIS_Person_Address1 ON PSSIS_Person_Address1.PersonID = person.id
+
+where Person.IsActive = 1
+and StudentContactDetail.IsActive = 1
+and GuardianStudent.GuardianID is null
+and
+(sysdate > StudentContactDetail.StartDate OR StudentContactDetail.StartDate IS NULL)
+and
+(StudentContactDetail.EndDate > sysdate OR StudentContactDetail.EndDate IS NULL)
+and students.schoolid = 1497538
+
+    ]]></sql>
+  </query>
+  <!-- Define more queries here -->
+</queries>
